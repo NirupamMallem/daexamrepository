@@ -1,0 +1,255 @@
+Resources:
+   MyInstance:
+      Type: AWS::EC2::Instance
+      Properties:
+         AvailabilityZone: us-east-2a
+         ImageId: ami-02d1e544b84bf7502
+         InstanceType: t2.micro
+
+
+
+Lambda:
+
+
+{
+  "Resources" : {
+    "HelloLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "HelloLambdaRole",
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    },
+    
+    "HelloLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "HelloLambdaFunction",
+        "Role": {
+          "Fn::GetAtt": ["HelloLambdaRole","Arn"]
+        },
+        "Runtime": "python3.7",
+        "Handler": "index.my_handler",
+        "Code": {
+          "ZipFile": "def my_handler(event, context):\n  message = \"Hello Lambda World!\"\n  return message\n"
+        }
+      }
+    }
+  }
+}
+
+
+
+
+Dynamodb:
+
+
+
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Resources" : {
+    "myDynamoDBTable" : {
+      "Type" : "AWS::DynamoDB::Table",
+      "Properties" : {
+        "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Album",
+            "AttributeType" : "S"   
+          },
+          {
+            "AttributeName" : "Artist",
+            "AttributeType" : "S"
+          },
+          {
+            "AttributeName" : "Sales",
+            "AttributeType" : "N"
+          },
+          {
+            "AttributeName" : "NumberOfSongs",
+            "AttributeType" : "N"
+          }
+        ],
+        "KeySchema" : [
+          {
+            "AttributeName" : "Album",
+            "KeyType" : "HASH"
+          },
+          {
+            "AttributeName" : "Artist",
+            "KeyType" : "RANGE"
+          }
+        ],
+        "ProvisionedThroughput" : {
+          "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "5"
+        },
+        "TableName" : "myTableName",
+        "GlobalSecondaryIndexes" : [{
+          "IndexName" : "myGSI",
+          "KeySchema" : [
+            {
+              "AttributeName" : "Sales",
+              "KeyType" : "HASH"
+            },
+            {
+              "AttributeName" : "Artist",
+              "KeyType" : "RANGE"
+            }
+          ],                         
+          "Projection" : {
+            "NonKeyAttributes" : ["Album","NumberOfSongs"],
+            "ProjectionType" : "INCLUDE"
+          },
+          "ProvisionedThroughput" : {
+            "ReadCapacityUnits" : "5",
+            "WriteCapacityUnits" : "5"
+          }
+        },
+        {
+          "IndexName" : "myGSI2",
+          "KeySchema" : [
+            {
+              "AttributeName" : "NumberOfSongs",
+              "KeyType" : "HASH"
+            },
+            {
+              "AttributeName" : "Sales",
+              "KeyType" : "RANGE"
+            }
+          ],                         
+          "Projection" : {
+            "NonKeyAttributes" : ["Album","Artist"],
+            "ProjectionType" : "INCLUDE"
+          },
+          "ProvisionedThroughput" : {
+            "ReadCapacityUnits" : "5",
+            "WriteCapacityUnits" : "5"
+          }
+        }],
+        "LocalSecondaryIndexes" :[{
+          "IndexName" : "myLSI",
+          "KeySchema" : [
+            {
+              "AttributeName" : "Album",
+              "KeyType" : "HASH"
+            },
+            {
+              "AttributeName" : "Sales",
+              "KeyType" : "RANGE"
+            }
+          ],                           
+          "Projection" : {
+            "NonKeyAttributes" : ["Artist","NumberOfSongs"],
+            "ProjectionType" : "INCLUDE"
+          }
+        }]
+      }
+    }
+  }
+}
+
+
+
+nano Dockerfile
+
+https://docs.aws.amazon.com/AmazonECS/latest/userguide/create-container-image.html 
+
+
+
+FROM ubuntu:18.04
+
+# Install dependencies
+RUN apt-get update
+RUN apt-get -y install apache2
+
+# Install apache and write hello world message
+RUN echo '<h3 align=center>We Successfully Deployed Docker</h3>'> /var/www/html/index.html
+
+# Configure apache
+RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh
+RUN echo 'mkdir -p /var/run/apache2' >> /root/run_apache.sh
+RUN echo 'mkdir -p /var/lock/apache2' >> /root/run_apache.sh 
+RUN echo '/usr/sbin/apache2 -D FOREGROUND' >> /root/run_apache.sh 
+RUN chmod 755 /root/run_apache.sh
+
+EXPOSE 80
+
+CMD /root/run_apache.sh
+
+
+
+
+Commands given by sir:
+
+
+
+
+289249350334.dkr.ecr.us-east-1.amazonaws.com/ecrrepojune30
+
+EC2 Public IPV4 address : 3.88.62.187
+
+sudo yum update -y
+
+sudo amazon-linux-extras install docker
+
+sudo service docker start
+
+sudo systemctl enable docker
+
+sudo usermod -a -G docker ec2-user
+
+docker info
+
+touch Dockerfile
+
+ls
+
+
+
+
+FROM ubuntu:18.04
+
+# Install dependencies
+RUN apt-get update
+RUN apt-get -y install apache2
+
+# Install apache and write hello world message
+RUN echo '<h3 align=center>We Successfully Deployed Docker</h3>' > /var/www/html/index.html
+
+# Configure apache
+RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh
+RUN echo 'mkdir -p /var/run/apache2' >> /root/run_apache.sh
+RUN echo 'mkdir -p /var/lock/apache2' >> /root/run_apache.sh
+RUN echo '/usr/sbin/apache2 -D FOREGROUND' >> /root/run_apache.sh
+RUN chmod 755 /root/run_apache.sh
+
+EXPOSE 80
+
+CMD /root/run_apache.sh
+
+
+
+docker build -t hello-world .
+
+
+docker images --filter reference=hello-world
+
+docker run -t -i -p 80:80 hello-world
+
+
+docker tag hello-world 289249350334.dkr.ecr.us-east-1.amazonaws.com/ecrrepojune30
+
+
+aws ecr get-login-password | docker login --username AWS --password-stdin 289249350334.dkr.ecr.us-east-1.amazonaws.com
+
+docker push 289249350334.dkr.ecr.us-east-1.amazonaws.com/ecrrepojune30
