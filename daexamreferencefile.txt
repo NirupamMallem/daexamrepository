@@ -253,3 +253,24 @@ docker tag hello-world 289249350334.dkr.ecr.us-east-1.amazonaws.com/ecrrepojune3
 aws ecr get-login-password | docker login --username AWS --password-stdin 289249350334.dkr.ecr.us-east-1.amazonaws.com
 
 docker push 289249350334.dkr.ecr.us-east-1.amazonaws.com/ecrrepojune30
+
+
+
+
+ELB SCHOOL USERDATA
+
+#!/bin/bash
+yum install httpd -y
+systemctl enable httpd
+mkdir /var/www/html/college
+echo "<h1>College Page from $(hostname -f)</h1>" > /var/www/html/college/index.html
+systemctl start httpd
+
+
+#!/bin/bash
+yum install httpd -y
+systemctl enable httpd
+mkdir /var/www/html/school
+echo "<h1>School Page from $(hostname -f)</h1>" > /var/www/html/college/index.html
+systemctl start httpd
+
