@@ -274,3 +274,12 @@ mkdir /var/www/html/school
 echo "<h1>School Page from $(hostname -f)</h1>" > /var/www/html/college/index.html
 systemctl start httpd
 
+
+
+IAM CRED:
+
+USERNAME : AWSDeveloper-at-495745966393
+
+PASSWORD : YBzMFtrejAQOzFURZsv+E+IsVVVgv5cUP9N+SJ6aq5w=
+
+
